@@ -21,6 +21,13 @@ public class RopeSystem : MonoBehaviour
         private bool isColliding;
         private Dictionary<Vector2, int> wrapPointsLookup = new Dictionary<Vector2, int>();
         private SpriteRenderer ropeHingeAnchorSprite;
+        public bool instant = false;
+        public float bulletSpeed = 1f;
+        public float ropeLength = 100f;
+
+        private bool shooting = false;
+        private Vector2 bulletPosition;
+        private Vector2 bulletDirection;
 
         void Awake()
         {
@@ -30,18 +37,51 @@ public class RopeSystem : MonoBehaviour
                 ropeHingeAnchorSprite = ropeHingeAnchor.GetComponent<SpriteRenderer>();
         }
 
-        private Vector2 GetClosestColliderPointFromRaycastHit(RaycastHit2D hit, PolygonCollider2D polyCollider)
+        private Vector2 GetClosestColliderPoint(Vector2 point, PolygonCollider2D polyCollider)
         {
                 var distanceDictionary = polyCollider.points.ToDictionary<Vector2, float, Vector2>(
-                    position => Vector2.Distance(hit.point, polyCollider.transform.TransformPoint(position)),
+                    position => Vector2.Distance(point, polyCollider.transform.TransformPoint(position)),
                     position => polyCollider.transform.TransformPoint(position));
 
                 var orderedDictionary = distanceDictionary.OrderBy(e => e.Key);
                 return orderedDictionary.Any() ? orderedDictionary.First().Value : Vector2.zero;
         }
 
+        private void ProcessBullet()
+        {
+                bulletPosition += bulletDirection * bulletSpeed;
+                ropePositions.Clear();
+
+                //transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 2f), ForceMode2D.Impulse);
+                ropePositions.Add(bulletPosition);
+                wrapPointsLookup.Add(bulletPosition, 0);
+                ropeJoint.distance = Vector2.Distance(playerPosition, bulletPosition);
+                //ropeJoint.enabled = true;
+                ropeHingeAnchorSprite.enabled = true;
+
+                var bulletToCurrentNextHit = Physics2D.Raycast(playerPosition, (bulletPosition - playerPosition).normalized, Vector2.Distance(playerPosition, bulletPosition) - 0.1f, ropeLayerMask);
+                if (bulletToCurrentNextHit)
+                {
+                        var colliderWithVertices = bulletToCurrentNextHit.collider as PolygonCollider2D;
+                        if (colliderWithVertices != null)
+                        {
+                                var closestPointToHit = GetClosestColliderPoint(bulletToCurrentNextHit.point, colliderWithVertices);
+                                if (Vector2.Distance(closestPointToHit, bulletPosition) <= bulletSpeed * 2f)
+                                {
+                                        shooting = false;
+                                        ropeJoint.enabled = true;
+                                }
+                        }
+                }
+        }
+
         void Update()
         {
+                if (shooting)
+                {
+                        ProcessBullet();
+                }
+
                 var worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
                 var facingDirection = worldMousePosition - transform.position;
                 var aimAngle = Mathf.Atan2(facingDirection.y, facingDirection.x);
@@ -73,7 +113,7 @@ public class RopeSystem : MonoBehaviour
                                         var colliderWithVertices = playerToCurrentNextHit.collider as PolygonCollider2D;
                                         if (colliderWithVertices != null)
                                         {
-                                                var closestPointToHit = GetClosestColliderPointFromRaycastHit(playerToCurrentNextHit, colliderWithVertices);
+                                                var closestPointToHit = GetClosestColliderPoint(playerToCurrentNextHit.point, colliderWithVertices);
                                                 if (wrapPointsLookup.ContainsKey(closestPointToHit))
                                                 {
                                                         ResetRope();
@@ -93,6 +133,59 @@ public class RopeSystem : MonoBehaviour
                 HandleInput(aimDirection);
         }
 
+        private void InstantHookAttach(Vector2 aimDirection)
+        {
+                var hit = Physics2D.Raycast(playerPosition, aimDirection, ropeMaxCastDistance, ropeLayerMask);
+                if (hit.collider != null)
+                {
+                        ropeAttached = true;
+                        if (!ropePositions.Contains(hit.point))
+                        {
+                                transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 2f), ForceMode2D.Impulse);
+                                ropePositions.Add(hit.point);
+                                wrapPointsLookup.Add(hit.point, 0);
+                                ropeJoint.distance = Vector2.Distance(playerPosition, hit.point);
+                                ropeJoint.enabled = true;
+                                ropeHingeAnchorSprite.enabled = true;
+                        }
+                }
+                else
+                {
+                        ropeRenderer.enabled = false;
+                        ropeAttached = false;
+                        ropeJoint.enabled = false;
+                }
+        }
+
+        private void GunHookShoot(Vector2 aimDirection)
+        {
+                shooting = true;
+                bulletDirection = aimDirection;
+                bulletPosition = playerPosition;
+
+                var hit = Physics2D.Raycast(playerPosition, aimDirection, ropeMaxCastDistance, ropeLayerMask);
+                if (hit.collider != null)
+                {
+                        ropeAttached = true;
+                        if (!ropePositions.Contains(hit.point))
+                        {
+                                //transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 2f), ForceMode2D.Impulse);
+                                //ropePositions.Add(hit.point);
+                                //wrapPointsLookup.Add(hit.point, 0);
+                                //ropeJoint.distance = Vector2.Distance(playerPosition, hit.point);
+                                //ropeJoint.enabled = true;
+                                //ropeHingeAnchorSprite.enabled = true;
+                        }
+                }
+                else
+                {
+                        ropeRenderer.enabled = false;
+                        ropeAttached = false;
+                        ropeJoint.enabled = false;
+                }
+
+        }
+
         private void HandleInput(Vector2 aimDirection)
         {
                 if (Input.GetMouseButton(0))
@@ -100,25 +193,13 @@ public class RopeSystem : MonoBehaviour
                         if (ropeAttached) return;
                         ropeRenderer.enabled = true;
 
-                        var hit = Physics2D.Raycast(playerPosition, aimDirection, ropeMaxCastDistance, ropeLayerMask);
-                        if (hit.collider != null)
+                        if (instant)
                         {
-                                ropeAttached = true;
-                                if (!ropePositions.Contains(hit.point))
-                                {
-                                        transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 2f), ForceMode2D.Impulse);
-                                        ropePositions.Add(hit.point);
-                                        wrapPointsLookup.Add(hit.point, 0);
-                                        ropeJoint.distance = Vector2.Distance(playerPosition, hit.point);
-                                        ropeJoint.enabled = true;
-                                        ropeHingeAnchorSprite.enabled = true;
-                                }
+                                InstantHookAttach(aimDirection);
                         }
                         else
                         {
-                                ropeRenderer.enabled = false;
-                                ropeAttached = false;
-                                ropeJoint.enabled = false;
+                                GunHookShoot(aimDirection);
                         }
                 }
 
