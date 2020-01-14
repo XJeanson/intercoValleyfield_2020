@@ -141,6 +141,7 @@ public class RopeSystem : MonoBehaviour
                         ropeAttached = true;
                         if (!ropePositions.Contains(hit.point))
                         {
+
                                 transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 2f), ForceMode2D.Impulse);
                                 ropePositions.Add(hit.point);
                                 wrapPointsLookup.Add(hit.point, 0);
