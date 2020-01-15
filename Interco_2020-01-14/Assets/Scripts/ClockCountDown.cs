@@ -16,6 +16,7 @@ public class ClockCountDown : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().color = Color.white;
         timeMultiplier = ((19f - startTime) * 60) / levelTime;
         H = (int)startTime;
         M = (int)((startTime - (int)startTime) * multiplier);
@@ -25,7 +26,18 @@ public class ClockCountDown : MonoBehaviour
     void Update()
     {
         timer += Time.deltaTime;
-
+        
+        if (H >= 19)
+        {
+            GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().text = "19 : 00";
+            if (timer > lastUpdateTime + 1)
+            {
+                if (GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().color == Color.white)
+                    GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().color = Color.red;
+                else
+                    GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().color = Color.white;
+            }
+        }
         if (timer > lastUpdateTime + 1)
         {
             M += (int)timeMultiplier;
