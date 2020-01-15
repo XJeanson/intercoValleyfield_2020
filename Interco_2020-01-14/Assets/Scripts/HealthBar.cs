@@ -39,11 +39,7 @@ public class HealthBar : MonoBehaviour
     {
         if (health != mCurrentValue)
         {
-            if (health != mCurrentValue)
-            {
-                mCurrentValue = 0;
-                mCurrentPercent = 0;
-            }
+
             mCurrentValue = health;
             mCurrentPercent = (float)mCurrentValue / (float)(Max - Min);
             TxtHealth.text = Convert.ToString(health);
@@ -52,6 +48,4 @@ public class HealthBar : MonoBehaviour
         }
 
     }
-
-
 }
