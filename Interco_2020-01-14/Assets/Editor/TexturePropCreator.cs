@@ -2,6 +2,7 @@
 using System.IO;
 using UnityEngine;
 using UnityEditor;
+using System.Linq;
 
 public class TexturePropCreator : AssetPostprocessor
 {
@@ -10,11 +11,11 @@ public class TexturePropCreator : AssetPostprocessor
 
         static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-                foreach (string assetPath in importedAssets)
+                foreach (string assetPath in importedAssets.Concat(movedAssets).ToArray())
                 {
                         if (!Path.GetDirectoryName(assetPath).Equals(ASSET_DIRECTORY))
                         {
-                                return;
+                                continue;
                         }
 
                         var texture = AssetDatabase.LoadAssetAtPath<Texture2D>(assetPath);
@@ -31,9 +32,11 @@ public class TexturePropCreator : AssetPostprocessor
 
                 if (File.Exists(destinationPath))
                 {
-                        //GameObject prefab = PrefabUtility.LoadPrefabContents(destinationPath);
-                        //SpriteRenderer renderer = prefab.GetComponent<SpriteRenderer>();
-                        //renderer.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+                        GameObject prefab = PrefabUtility.LoadPrefabContents(destinationPath);
+                        SpriteRenderer renderer = prefab.GetComponent<SpriteRenderer>();
+                        renderer.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(assetPath);
+                        PrefabUtility.SaveAsPrefabAsset(prefab, destinationPath);
+                        GameObject.DestroyImmediate(prefab);
                 }
                 else
                 {
