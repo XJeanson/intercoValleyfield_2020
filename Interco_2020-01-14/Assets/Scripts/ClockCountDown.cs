@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class ClockCountDown : MonoBehaviour
 {
-    public float startTime = 0f;
-    public float levelTime = 0f;
+    public float startTime = 0f; //Hour of the day
+    public float levelTime = 0f; //In seconds ??
     private float timeMultiplier = 0f;
     private float lastUpdateTime = 0f;
     private int multiplier = 100;
@@ -29,7 +29,7 @@ public class ClockCountDown : MonoBehaviour
         
         if (H >= 19)
         {
-            GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().text = "19 : 00";
+            GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().text = "19 H 00";
             if (timer > lastUpdateTime + 1)
             {
                 if (GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().color == Color.white)
@@ -46,7 +46,8 @@ public class ClockCountDown : MonoBehaviour
                 H++;
                 M = 0;
             }
-            GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().text = H + " : " + M;
+            if(M <10) GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().text = H + " H 0" + M;
+            else GameObject.FindGameObjectWithTag("Clock").GetComponent<Text>().text = H + " H " + M;
             lastUpdateTime = timer;
         }
     }
