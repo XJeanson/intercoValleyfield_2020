@@ -7,6 +7,8 @@ public class LifeComponent : MonoBehaviour
 {
     public float MaxHealth;
     public float CurrentHealth;
+    public AudioSource AudioSource;
+    public AudioClip HurtClip;
     public AudioClip deathSound;
 
 
@@ -28,10 +30,7 @@ public class LifeComponent : MonoBehaviour
 
     public void Die()
     {
-        if (gameObject.GetComponent<AudioSource>() != null)
-        {
-            AudioSource.PlayClipAtPoint(deathSound, transform.position, 10f);
-        }
+        AudioSource.PlayOneShot(deathSound);
         GameObject.Destroy(gameObject);
     }
 
@@ -46,6 +45,7 @@ public class LifeComponent : MonoBehaviour
         if (col.gameObject.tag.Equals("Enemy")){
             CurrentHealth -= 1;
             Destroy(col.gameObject);
+            AudioSource.PlayOneShot(HurtClip,0.7f);
         }
     }
 

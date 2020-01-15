@@ -30,6 +30,10 @@ public class PlayerMovement : MonoBehaviour
     public float swingForce = 4f;
     private SpriteRenderer playerSprite;
 
+    //Audio attr
+    public AudioSource AudioSource;
+    public AudioClip[] walkingClips;
+
     private Rigidbody2D rBody;
 
 
@@ -73,7 +77,7 @@ public class PlayerMovement : MonoBehaviour
          
 
             if (isSwinging)
-            {
+            {                
                 Debug.Log("IsSwinging");
                 animator.SetBool("IsSwinging", true);
 
@@ -97,7 +101,7 @@ public class PlayerMovement : MonoBehaviour
                 rBody.AddForce(force, ForceMode2D.Force);
             }
             else
-            {
+            {               
                 animator.SetBool("IsSwinging", false);
                 if (groundCheck) //Si touche le sol
                 {
@@ -105,6 +109,16 @@ public class PlayerMovement : MonoBehaviour
 
                     rBody.AddForce(new Vector2((horizontalInput * groundForce - rBody.velocity.x) * groundForce, 0));
                     rBody.velocity = new Vector2(rBody.velocity.x, rBody.velocity.y);
+
+                    if (horizontalInput != 0 && !AudioSource.isPlaying)
+                    {
+                        int random = Random.Range(0, 4);
+                        if(random == 0) AudioSource.PlayOneShot(walkingClips[0]);
+                        else if (random == 1) AudioSource.PlayOneShot(walkingClips[1]);
+                        else if (random == 2) AudioSource.PlayOneShot(walkingClips[2]);
+                        else if (random == 3) AudioSource.PlayOneShot(walkingClips[3]);
+                    }
+                    
                 }
             }
         }

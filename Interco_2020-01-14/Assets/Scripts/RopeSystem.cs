@@ -30,7 +30,12 @@ public class RopeSystem : MonoBehaviour
         private Vector2 bulletPosition;
         private Vector2 bulletDirection;
 
-        void Awake()
+    //Audio attr
+    public AudioSource AudioSource;
+    public AudioClip[] HookClips;
+    public AudioClip SwingingClip;
+
+    void Awake()
         {
                 ropeJoint.enabled = false;
                 playerPosition = transform.position;
@@ -78,6 +83,7 @@ public class RopeSystem : MonoBehaviour
 
         private void CancelShooting()
         {
+                AudioSource.Stop();
                 shooting = false;
                 ropePositions.Clear();
                 ropeRenderer.enabled = false;
@@ -187,30 +193,34 @@ public class RopeSystem : MonoBehaviour
                 bulletDirection = aimDirection;
                 bulletPosition = playerPosition;
                 ropeAttached = true;
+                AudioSource.PlayOneShot(HookClips[Random.Range(0, 2)]);
+                AudioSource.PlayOneShot(SwingingClip);
                 return;
 
-                var hit = Physics2D.Raycast(playerPosition, aimDirection, ropeMaxCastDistance, ropeLayerMask);
-                if (hit.collider != null)
-                {
-                        ropeAttached = true;
-                        /*
-                        if (!ropePositions.Contains(hit.point))
-                        {
-                                //transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 2f), ForceMode2D.Impulse);
-                                //ropePositions.Add(hit.point);
-                                //wrapPointsLookup.Add(hit.point, 0);
-                                //ropeJoint.distance = Vector2.Distance(playerPosition, hit.point);
-                                //ropeJoint.enabled = true;
-                                //ropeHingeAnchorSprite.enabled = true;
-                        }
-                        */
-                }
-                else
-                {
-                        ropeRenderer.enabled = false;
-                        ropeAttached = false;
-                        ropeJoint.enabled = false;
-                }
+                //var hit = Physics2D.Raycast(playerPosition, aimDirection, ropeMaxCastDistance, ropeLayerMask);
+                //if (hit.collider != null)
+                //{
+                //        ropeAttached = true;
+                //        /*
+                //        if (!ropePositions.Contains(hit.point))
+                //        {
+                //                //transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 2f), ForceMode2D.Impulse);
+                //                //ropePositions.Add(hit.point);
+                //                //wrapPointsLookup.Add(hit.point, 0);
+                //                //ropeJoint.distance = Vector2.Distance(playerPosition, hit.point);
+                //                //ropeJoint.enabled = true;
+                //                //ropeHingeAnchorSprite.enabled = true;
+                //        }
+                //        */
+                //}
+                //else
+                //{
+                //        ropeRenderer.enabled = false;
+                //        ropeAttached = false;
+                //        ropeJoint.enabled = false;
+                //}
+
+        
 
         }
 
@@ -233,6 +243,7 @@ public class RopeSystem : MonoBehaviour
 
                 if (Input.GetMouseButton(1))
                 {
+            AudioSource.Stop();
                         ResetRope();
                 }
         }
