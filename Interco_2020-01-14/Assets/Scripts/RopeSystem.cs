@@ -24,6 +24,7 @@ public class RopeSystem : MonoBehaviour
         public bool instant = false;
         public float bulletSpeed = 1f;
         public float ropeLength = 100f;
+        public bool climbable = false;
 
         private bool shooting = false;
         private Vector2 bulletPosition;
@@ -75,11 +76,30 @@ public class RopeSystem : MonoBehaviour
                 }
         }
 
+        private void CancelShooting()
+        {
+                shooting = false;
+                ropePositions.Clear();
+                ropeRenderer.enabled = false;
+                ropeAttached = false;
+                ropeJoint.enabled = false;
+                ResetRope();
+        }
+
+
         void Update()
         {
                 if (shooting)
                 {
-                        ProcessBullet();
+                        if (Vector2.Distance(playerPosition, bulletPosition) > ropeLength)
+                        {
+                                print("f");
+                                CancelShooting();
+                        }
+                        else
+                        {
+                                ProcessBullet();
+                        }
                 }
 
                 var worldMousePosition = Camera.main.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0f));
@@ -129,7 +149,10 @@ public class RopeSystem : MonoBehaviour
                 }
 
                 UpdateRopePositions();
-                HandleRopeLength();
+                if (climbable)
+                {
+                        HandleRopeLength();
+                }
                 HandleInput(aimDirection);
         }
 
@@ -163,11 +186,14 @@ public class RopeSystem : MonoBehaviour
                 shooting = true;
                 bulletDirection = aimDirection;
                 bulletPosition = playerPosition;
+                ropeAttached = true;
+                return;
 
                 var hit = Physics2D.Raycast(playerPosition, aimDirection, ropeMaxCastDistance, ropeLayerMask);
                 if (hit.collider != null)
                 {
                         ropeAttached = true;
+                        /*
                         if (!ropePositions.Contains(hit.point))
                         {
                                 //transform.GetComponent<Rigidbody2D>().AddForce(new Vector2(0f, 2f), ForceMode2D.Impulse);
@@ -177,6 +203,7 @@ public class RopeSystem : MonoBehaviour
                                 //ropeJoint.enabled = true;
                                 //ropeHingeAnchorSprite.enabled = true;
                         }
+                        */
                 }
                 else
                 {

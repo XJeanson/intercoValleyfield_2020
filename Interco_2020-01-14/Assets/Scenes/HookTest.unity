@@ -962,6 +962,9 @@ MonoBehaviour:
   crosshair: {fileID: 2093578112}
   crosshairSprite: {fileID: 2093578113}
   playerMovement: {fileID: 1438526631}
+  instant: 0
+  bulletSpeed: 1
+  ropeLength: 10
 --- !u!212 &1438526627
 SpriteRenderer:
   m_ObjectHideFlags: 0
