@@ -120,6 +120,36 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &272214617
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 272214618}
+  m_Layer: 10
+  m_Name: Ground Check
+  m_TagString: Untagged
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &272214618
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 272214617}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.78, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1438526628}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &417984372
 GameObject:
   m_ObjectHideFlags: 0
@@ -965,6 +995,7 @@ MonoBehaviour:
   instant: 0
   bulletSpeed: 1
   ropeLength: 10
+  climbable: 0
 --- !u!212 &1438526627
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -1027,6 +1058,7 @@ Transform:
   m_Children:
   - {fileID: 1155131642}
   - {fileID: 2093578112}
+  - {fileID: 272214618}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1079,12 +1111,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf09e498c8cdc9249b1aeb40ddb49e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  swingForce: 4
-  speed: 2.5
+  speed: 3
   jumpSpeed: 5
+  groundCheckTransform: {fileID: 272214618}
+  checkRadius: 1
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 256
+  extraJumpsValue: 1
+  extraJumps: 0
+  isJumping: 0
   ropeHook: {x: 0, y: 0}
   isSwinging: 0
   groundCheck: 0
+  swingForce: 4
 --- !u!232 &1438526632
 DistanceJoint2D:
   m_ObjectHideFlags: 0
@@ -1771,7 +1811,7 @@ GameObject:
   - component: {fileID: 2118141274}
   - component: {fileID: 2118141273}
   - component: {fileID: 2118141272}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: rock3 (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
