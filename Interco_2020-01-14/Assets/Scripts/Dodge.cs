@@ -21,7 +21,6 @@ public class Dodge : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Q))
         {
-            Debug.Log("Q : " + lastDirection);
             switch (lastDirection)
             {
                 case "left":
