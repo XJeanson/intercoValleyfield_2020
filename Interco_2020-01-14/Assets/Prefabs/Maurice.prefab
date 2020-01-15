@@ -165,8 +165,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1817442758823366291}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.85, y: -1.01, z: 0}
-  m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_Children:
   - {fileID: 1817442758535809737}
   - {fileID: 1817442759476417971}
@@ -394,20 +394,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf09e498c8cdc9249b1aeb40ddb49e43, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  swingForce: 4
   speed: 3
   jumpSpeed: 5
-  groundCheckTransform: {fileID: 1817442757673896041}
-  checkRadius: 1
-  whatIsGround:
-    serializedVersion: 2
-    m_Bits: 256
-  extraJumpsValue: 1
-  extraJumps: 0
-  isJumping: 0
   ropeHook: {x: 0, y: 0}
   isSwinging: 0
   groundCheck: 0
-  swingForce: 4
 --- !u!232 &1817442758823366299
 DistanceJoint2D:
   m_ObjectHideFlags: 0
