@@ -12,6 +12,7 @@ public class ClockCountDown : MonoBehaviour
     private int multiplier = 100;
     private float timer = 0;
     private int H, M;
+    public int ElapsedTime = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -41,6 +42,7 @@ public class ClockCountDown : MonoBehaviour
         if (timer > lastUpdateTime + 1)
         {
             M += (int)timeMultiplier;
+            ElapsedTime++;
             if ((M % 60) == 0 || M >= 60)
             {
                 H++;
